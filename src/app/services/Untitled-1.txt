@@ -1,0 +1,23 @@
+import { TestBed,inject } from '@angular/core/testing';
+import { HttpClientTestingModule,HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient,HttpErrorResponse } from '@angular/common/http';
+import { PersonneServiceService } from './personne-service.service';
+
+describe('PersonneServiceService', () => {
+  let service: PersonneServiceService;
+  let httpClient: HttpClient;
+  let HttpTestingController: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports:[HttpClientTestingModule] 
+    });
+    service = TestBed.inject(PersonneServiceService);
+    httpClient= TestBed.get(HttpClient);
+    HttpTestingController=TestBed.get(HttpTestingController);
+  });
+
+  it('should be created', inject([PersonneServiceService],(service:PersonneServiceService) => {
+    expect(service).toBeTruthy();
+  }));
+});

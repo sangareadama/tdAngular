@@ -1,0 +1,248 @@
+<div class="row">
+    <div class="card col-md-10">
+      <p-table #dt1 [value]="personnes" dataKey="id" editMode="row" [columns]="selectedColumns" responsiveLayout="scroll" [scrollable]="true" scrollHeight="500px" [virtualScroll]="true" [virtualScrollItemSize]="46">
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button pButton pRipple label="Add Personne" icon="pi pi-visible" class="p-button-outlined p-button-info" (click)="openPersonnedialog()" ></button>
+            <div>
+              <p-confirmDialog [transitionOptions]="'200ms'" [style]="{width: '30vw'}" key="positionDialog" [position]="position" [baseZIndex]="10000" rejectButtonStyleClass="p-button-outlined"></p-confirmDialog>
+              <p-toast></p-toast>
+            </div>
+          </div> 
+          <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+          selectedItemsLabel="{0} columns selected" [style]="{'min-width': '200px'}" placeholder="Choose Columns"></p-multiSelect>
+        </ng-template>
+          
+        
+        <ng-template   pTemplate="header"  let-columns> 
+          <tr >     
+            <th>Departement</th>
+            <!-- <th style="width:30%" pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon></th>
+            <th style="width:45%" pSortableColumn="prenom" style="min-width:10rem;">Prenom <p-sortIcon field="nom"></p-sortIcon></th>
+            <th style="width:30%" pSortableColumn="age">Age<p-sortIcon field="nom"></p-sortIcon></th> 
+            <th style="width:30%" pSortableColumn="age">Departement<p-sortIcon field="nom"></p-sortIcon></th>
+            <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th> -->
+            <th *ngFor="let col of columns" pSortableColumn={{col.header}}>
+              <p-sortIcon field={{col.header}}></p-sortIcon>
+              {{col.header}}
+            </th>
+          </tr>
+          <tr>
+            <th>
+              <input pInputText type="text" (input)="dt1.filter($any($event.target).value, 'departement.designation', 'contains')" [value]="$any(dt1.filters['departement.designation'])?.value"  placeholder="Filtrer par Departement" class="p-column-filter">
+           </th>
+            <th *ngFor="let col of columns">
+              <input pInputText type="text" (input)="dt1.filter($any($event.target).value, '{{col.header}}', 'contains')" [value]="$any(dt1.filters['{{col.header}}'])?.value"  placeholder="Filtrer par {{col.header}}" class="p-column-filter">
+            </th>
+            <!-- <th>
+              <input pInputText type="text" (input)="dt1.filter($any($event.target).value, 'prenom', 'contains')" [value]="$any(dt1.filters['prenom'])?.value"  placeholder="Filtrer par Prenom" class="p-column-filter">
+            </th>
+            <th>
+              <input pInputText type="text" (input)="dt1.filter($any($event.target).value, 'age', 'contains')" [value]="$any(dt1.filters['age'])?.value"  placeholder="Filtrer par age" class="p-column-filter">
+            </th>
+            <th>
+              <input pInputText type="text" (input)="dt1.filter($any($event.target).value, 'departement.designation', 'contains')" [value]="$any(dt1.filters['departement.designation'])?.value"  placeholder="Filtrer par Departement" class="p-column-filter">
+           </th>
+            <th>
+                <input pInputText type="text" (input)="dt1.filter($any($event.target).value, 'status', 'contains')" [value]="$any(dt1.filters['status'])?.value"  placeholder="Filtrer par status" class="p-column-filter">
+            </th> -->
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-pers let-editing="editing" let-ri="rowIndex" let-columns="columns">
+          <tr [pEditableRow]="pers">
+              <!-- <td>
+                  <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input pInputText type="text" [(ngModel)]="pers.nom">
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                          {{pers.nom}}
+                      </ng-template>
+                  </p-cellEditor>
+              </td>
+              <td>
+                  <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input pInputText type="text" [(ngModel)]="pers.prenom" required>
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                          {{pers.prenom}}
+                      </ng-template>
+                  </p-cellEditor>
+              </td>
+               -->
+              <td>{{pers.departement.designation}}</td>
+              <td *ngFor="let col of columns"> 
+                {{pers[col.field]}}
+              </td>
+              <td>
+                <div [ngClass]="{'outofstock': pers.status === 18, 'lowstock': (pers.age<18),'instock': pers.age > 18}">
+                  {{pers.age}}
+                </div>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                      <p-dropdown [options]="departements" appendTo="body" [(ngModel)]="pers.departement"  optionLabel="designation"  [style]="{'width':'100%'}"></p-dropdown>
+                  </ng-template>
+                  <ng-template pTemplate="output" >
+                      {{pers.departements}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                  <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input pInputText type="text" [(ngModel)]="pers.age">
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                          {{pers.age | currency: 'Ans'}}
+                      </ng-template>
+                  </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="pers.nom">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{pers.nom}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                  <div class="flex align-items-center justify-content-center gap-2">
+                      <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(pers)" class="p-button-rounded p-button-text"></button>
+                      <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(pers)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                      <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(pers, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                  </div>
+              </td>
+              <td  >
+                <button pButton pRipple icon="pi pi-pencil" (click)="updatePersonne = true " (click)="UpdatePersonne(pers)"  class="p-button-rounded p-button-success" ></button>   
+              </td>
+              <td>
+                <p-button (click)="onDeleteConfirmation('top',pers)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger mr-2"></p-button>
+               <!-- <button type="button"    pButton  (click)="deletePersonne=true"  (click)="onDeletePersonne(pers)" class="p-button-rounded p-button-warning" ></button>  -->
+              </td>
+          </tr>
+      </ng-template>
+
+        
+       <!-- <ng-template pTemplate="body" let-pers  let-columns="columns">
+          <tr>
+
+            <td>{{pers.departement.designation}}</td>
+            <td *ngFor="let col of columns"> 
+              {{pers[col.field]}}
+            </td>
+            <td>
+              <div [ngClass]="{'outofstock': pers.status === 18, 'lowstock': (pers.age<18),'instock': pers.age > 18}">
+                {{pers.age}}
+              </div>
+            </td>
+            
+            <td> 
+              <div class="flex align-items-center justify-content-center gap-2">
+                  <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(pers)" class="p-button-rounded p-button-text"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(pers)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(pers, pers.id)" class="p-button-rounded p-button-text p-button-danger"></button>
+              </div>
+          </td>
+            
+            <!-- <td ><div class="box" [innerHTML]="pers.nom"></div></td>    
+            <td ><div class="box" [innerHTML]="pers.prenom"> </div></td>
+            <td ><div class="box" [innerHTML]="pers.age"> </div></td>
+            <td ><div class="box" [innerHTML]="pers.departement.designation"> </div></td>
+            <td>
+                <span class="p-column-title">Status</span>
+                <span >{{pers.status}}</span>
+            </td> 
+            <td ></td>
+            <td  >
+              <button pButton pRipple icon="pi pi-pencil" (click)="updatePersonne = true " (click)="UpdatePersonne(pers)"  class="p-button-rounded p-button-success" ></button>   
+            </td>
+            <td >
+              <p-button (click)="onDeleteConfirmation('top',pers)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger mr-2"></p-button>
+              <!-- <button type="button"    pButton  (click)="deletePersonne=true"  (click)="onDeletePersonne(pers)" class="p-button-rounded p-button-warning" ></button> 
+            </td>
+          </tr>
+        </ng-template>-->
+      </p-table>
+    </div>
+  </div>
+
+  <p-dialog [(visible)]="savePersonne" [style]="{width: '550px'}" header=" Add Personne" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">      
+      <form  [formGroup]="personneForm">        
+        <div class="field">
+          <label for="nom">Nom</label>
+          <input type="text" pInputText id="libelle" [(ngModel)]="personne.nom" formControlName="nom" required autofocus />
+          <small class="p-error" *ngIf="submitted && !personne.nom">contenu is required.</small>
+        </div> 
+
+        <div class="field">
+            <label for="prenom">Prenom</label>
+            <input type="text" pInputText id="prenom" [(ngModel)]="personne.prenom" formControlName="prenom" required autofocus /> 
+            <small class="p-error" *ngIf="submitted && !personne.prenom">contenu is required.</small>
+        </div>     
+
+        <div class="form-group">
+          <label for="Departement">Departement</label>
+          <p-dropdown [options]="departements" formControlName="departementId" [(ngModel)]="personne.departementId" optionLabel="designation" optionValue="id"></p-dropdown>
+       </div>
+
+        <div class="col-md-6 col-sm-12 ">
+            <label for="horizontal">Age</label>
+            <p-inputNumber [(ngModel)]="personne.age" formControlName="age"  [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1"
+            [min]="0" [max]="100"  suffix="  ans" decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" >
+            </p-inputNumber>
+        </div>
+        
+      </form>      
+    </ng-template>   
+      
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="savePersonne=false" ></button>
+     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="savePersonne=false" (click)="onSavePersonne()" ></button> 
+    </ng-template>
+  </p-dialog>
+
+
+  <p-dialog [(visible)]="updatePersonne" [style]="{width: '550px'}" header=" Upsate personne" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+  
+      <form  [formGroup]="personneFormUpdate">
+          <div class="field col-md-6 col-sm-12" >
+            <label for="nom">Nom</label>
+            <input type="text" pInputText id="libelle" [(ngModel)]="personneUpdate.nom" formControlName="nom" required autofocus />
+            <small class="p-error" *ngIf="submitted && !personneUpdate.nom">contenu is required.</small>
+          </div> 
+          <div class="field col-md-6 col-sm-12">
+              <label for="prenom">Prenom</label>
+              <input type="text" pInputText id="prenom" [(ngModel)]="personneUpdate.prenom" formControlName="prenom" required autofocus /> 
+              <small class="p-error" *ngIf="submitted && !personneUpdate.prenom">contenu required.</small>
+          </div> 
+
+          <div class="form-group col-md-6 col-sm-12">
+            <label for="Departement">Departement</label>
+            <p-dropdown [options]="departements" formControlName="departementId" [(ngModel)]="personneUpdate.departementId" optionLabel="designation" optionValue="id"></p-dropdown>
+         </div>
+          
+  
+          <div class="col-md-6 col-sm-12 "> 
+              <label for="horizontal">Age</label>
+              <p-inputNumber [(ngModel)]="personneUpdate.age" formControlName="age"  [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1"
+              [min]="0" [max]="100"  suffix="  ans" decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" >
+              </p-inputNumber>
+          </div>
+      </form>      
+    </ng-template>   
+    
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="updatePersonne=false" ></button>
+     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="updatePersonne=false"  ></button> 
+    </ng-template>
+  </p-dialog>
+  
+  
